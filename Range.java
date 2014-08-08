@@ -48,7 +48,7 @@ public class Range {
 	}
 
 	private boolean isOverlapping(Range range) {
-		if(this.end >= range.start || this.start >= range.end)
+		if((this.end >= range.start && this.end <= range.end) || (range.end >= this.start && range.end <= this.end))
 		{
 			return true;
 		}
@@ -66,7 +66,7 @@ public class Range {
 	
 	public boolean isTwoWaySplit(Range range2)
 	{
-		if(this.start < range2.start && this.end == range2.end || this.start == range2.start && this.end > range2.end)
+		if((this.start < range2.start && this.end == range2.end) || (this.start == range2.start && this.end > range2.end))
 		{
 			return true;
 		}
@@ -95,8 +95,16 @@ public class Range {
 	public ArrayList<Range> twoWaySplit(Range range)
 	{
 		ArrayList<Range> splitted = new ArrayList<Range>();
-		splitted.add(new Range(Math.min(this.start,range.start),Math.max(this.start, range.start) - 1));
-		splitted.add(new Range(Math.max(this.start, range.start), this.end));
+		if(this.end == range.end)
+		{
+			splitted.add(new Range(Math.min(this.start,range.start),Math.max(this.start, range.start) - 1));
+			splitted.add(new Range(Math.max(this.start, range.start), this.end));
+		}
+		else
+		{
+			splitted.add(new Range(this.start,Math.min(this.end, range.end)));
+			splitted.add(new Range(Math.min(this.end, range.end)+1, this.end));
+		}
 		return splitted;
 	}
 	
@@ -111,12 +119,18 @@ public class Range {
 	
 	public static void main(String args[])
 	{
-		Range range1 = new Range(1, 10000);
-		Range range2 = new Range(12000, 15000);
+		Range range1 = new Range(1, 100);
+		Range range2 = new Range(120, 150);
 		Range range3 = new Range(101, 200);
 		Range range4 = new Range(130, 200);
+		Range range5 = new Range(1,300);
 		System.out.println(range1);
 		System.out.println(range1.isMergeRequired(range2));
+		System.out.println(range1.isMergeRequired(range3));
+		System.out.println(range1.isMergeRequired(range4));
+		System.out.println(range5.isSplitRequired(range1));
+		System.out.println(range5.split(range1));
+		System.out.println(range5.split(range4));
 	}
 
 }
