@@ -12,6 +12,11 @@ public class Range {
 		this.end = end;
 	}
 	
+	public String toString()
+	{
+		return "["+start + ":"+end+"]";
+	}
+	
 	public boolean isMergeRequired(Range range2)
 	{
 		if(this.end == range2.start - 1 || range2.end == this.start - 1)
@@ -25,7 +30,7 @@ public class Range {
 		return false;
 	}
 	
-	public boolean isSplitRequired(Range range)
+	private boolean isSplitRequired(Range range)
 	{
 		if(isTwoWaySplit(range) || isThreeWaySplit(range))
 		{
@@ -43,7 +48,7 @@ public class Range {
 	}
 
 	private boolean isOverlapping(Range range) {
-		if(this.end <= range.start)
+		if(this.end >= range.start)
 		{
 			return true;
 		}
@@ -102,6 +107,16 @@ public class Range {
 		splitted.add(new Range(range.start, range.end));
 		splitted.add(new Range(range.end + 1, this.end));
 		return splitted;
+	}
+	
+	public static void main(String args[])
+	{
+		Range range1 = new Range(1, 10000);
+		Range range2 = new Range(12000, 15000);
+		Range range3 = new Range(101, 200);
+		Range range4 = new Range(130, 200);
+		System.out.println(range1);
+		System.out.println(range1.isMergeRequired(range2));
 	}
 
 }
