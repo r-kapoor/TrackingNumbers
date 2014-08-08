@@ -17,6 +17,14 @@ public class Range {
 		return "["+start + ":"+end+"]";
 	}
 	
+	public boolean isLesserRangeThan(Range range)
+	{
+		if(this.end < range.end)
+		{
+			return true;
+		}
+		return false;
+	}
 	public boolean isMergeRequired(Range range2)
 	{
 		if(this.end == range2.start - 1 || range2.end == this.start - 1)
@@ -30,9 +38,13 @@ public class Range {
 		return false;
 	}
 	
-	private boolean isSplitRequired(Range range)
+	public boolean isSplitRequired(Range range)
 	{
 		if(isTwoWaySplit(range) || isThreeWaySplit(range))
+		{
+			return true;
+		}
+		if(isOverlapping(range))
 		{
 			return true;
 		}
@@ -48,9 +60,12 @@ public class Range {
 	}
 
 	private boolean isOverlapping(Range range) {
-		if((this.end >= range.start && this.end <= range.end) || (range.end >= this.start && range.end <= this.end))
+		if(!isSubrange(range) && !range.isSubrange(this))
 		{
-			return true;
+			if((this.end >= range.start && this.end <= range.end) || (range.end >= this.start && range.end <= this.end))
+			{
+				return true;
+			}
 		}
 		return false;
 	}
@@ -89,9 +104,28 @@ public class Range {
 		{
 			return threeWaySplit(range);
 		}
+		if(isOverlapping(range))
+		{
+			return overlapSplit(range);
+		}
 		return null;
 	}
 	
+	private ArrayList<Range> overlapSplit(Range range) {
+		ArrayList<Range> splitted = new ArrayList<Range>();
+		if(this.start < range.start)
+		{
+			splitted.add(new Range(this.start,range.start - 1));
+			splitted.add(new Range(range.start,range.end));
+		}
+		else
+		{
+			splitted.add(new Range(range.start, range.end));
+			splitted.add(new Range(range.end+1,this.end));
+		}
+		return splitted;
+	}
+
 	public ArrayList<Range> twoWaySplit(Range range)
 	{
 		ArrayList<Range> splitted = new ArrayList<Range>();
@@ -130,7 +164,8 @@ public class Range {
 		System.out.println(range1.isMergeRequired(range4));
 		System.out.println(range5.isSplitRequired(range1));
 		System.out.println(range5.split(range1));
-		System.out.println(range5.split(range4));
+		System.out.println(range4.isSplitRequired(range2));
+		System.out.println(range4.split(range2));
 	}
 
 }
