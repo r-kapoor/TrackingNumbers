@@ -18,9 +18,29 @@ public class Range {
 		{
 			return true;
 		}
+		else if(isOverlapping(range2) || isSubrange(range2))
+		{
+			return true;
+		}
 		return false;
 	}
 	
+	private boolean isSubrange(Range range) {
+		if(range.end <= this.end && range.start >= this.start)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isOverlapping(Range range) {
+		if(this.end <= range.start)
+		{
+			return true;
+		}
+		return false;
+	}
+
 	public boolean isThreeWaySplit(Range range2)
 	{
 		if(this.start < range2.start && this.end > range2.end)
@@ -57,7 +77,8 @@ public class Range {
 	{
 		ArrayList<Range> splitted = new ArrayList<Range>();
 		splitted.add(new Range(this.start,range.start - 1));
-		splitted.add(new Range(Math.max(this.start, range.start), this.end));
+		splitted.add(new Range(range.start, range.end));
+		splitted.add(new Range(range.end + 1, this.end));
 		return splitted;
 	}
 
