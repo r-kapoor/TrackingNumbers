@@ -48,7 +48,7 @@ public class Range {
 	}
 
 	private boolean isOverlapping(Range range) {
-		if(this.end >= range.start)
+		if(this.end >= range.start || this.start >= range.end)
 		{
 			return true;
 		}
