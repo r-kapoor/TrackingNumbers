@@ -12,6 +12,11 @@ public class Tracking {
 	{
 		
 	}
+	public String toString()
+	{
+		return range + " " + statusCode + " " + trackingNumber;
+	}
+	
 	public Tracking(String statusCode, int trackingNumber, Range range){
 		this.statusCode = statusCode;
 		this.trackingNumber = trackingNumber;
@@ -47,36 +52,30 @@ public class Tracking {
 		for(int i = 1; i < trackingInputList.size(); i++){
 			for(int j = 0; j < minimalTrackingList.size(); j++)
 			{
-			if(isStatusCodeAndTrackingNumSame(trackingInputList.get(i), minimalTrackingList.get(j)))
-			{
-				if(trackingInputList.get(i).range.isMergeRequired(minimalTrackingList.get(j).range))
+				if(trackingInputList.get(i).range.isLesserRangeThan(minimalTrackingList.get(j).range))
 				{
-					trackObj = new Tracking();
-					trackObj.range = trackingInputList.get(i).range.merge(trackingInputList.get(i-1).range);
-					trackObj.statusCode = trackingInputList.get(i).statusCode;
-					trackObj.trackingNumber =  trackingInputList.get(i).trackingNumber;
-					minimalTrackingList.add(j, trackObj);
+					minimalTrackingList.add(j, trackingInputList.get(i));
+				}
+				else if(isStatusCodeAndTrackingNumSame(trackingInputList.get(i), minimalTrackingList.get(j)))
+				{
+					if(minimalTrackingList.get(j).range.isMergeRequired(trackingInputList.get(i).range))
+					{
+						trackObj = new Tracking();
+						trackObj.range = trackingInputList.get(i-1).range.merge(trackingInputList.get(i).range);
+						trackObj.statusCode = trackingInputList.get(i).statusCode;
+						trackObj.trackingNumber =  trackingInputList.get(i).trackingNumber;
+						minimalTrackingList.add(j, trackObj);
+					}
 				}
 				else
 				{
-					//minimalTrackingList = placeAtAppropriatePostion(minimalTrackingList, trackingInputList.get(i));
-					
+					if(minimalTrackingList.get(j).range.isSplitRequired(trackingInputList.get(i).range))
+					{
+						ArrayList<Range> splitRanges = minimalTrackingList.get(j).range.split(trackingInputList.get(i).range);
+						ArrayList<Tracking> trackingAssignedList = assignStatusAndTrackNumberToRange(splitRanges, trackingInputList.get(i).range, minimalTrackingList.get(j).range);
+						minimalTrackingList.addAll(j, trackingAssignedList);
+					}
 				}
-			}
-			else
-			{
-				if(trackingInputList.get(i).range.isSplitRequired(minimalTrackingList.get(j).range))
-				{
-					ArrayList<Range> splitRanges = trackingInputList.get(i).range.split(minimalTrackingList.get(j).range);
-					ArrayList<Tracking> trackingAssignedList = assignStatusAndTrackNumberToRange(splitRanges, trackingInputList.get(i).range, minimalTrackingList.get(j).range);
-					minimalTrackingList.addAll(j, trackingAssignedList);
-				}
-				else
-				{
-					//minimalTrackingList = placeNonSplittedListinMinimal(minimalTrackingList, trackingInputList.get(i));
-				}
-			}
-				
 			}
 		}
 		return minimalTrackingList;
@@ -90,7 +89,7 @@ public class Tracking {
 	}
 	public static void main(String [] args) throws IOException {
 		List<Tracking> trackingInputList = readInput("trackingInput");
-		
+		System.out.println(trackingInputList);
 	}
 	
 }
