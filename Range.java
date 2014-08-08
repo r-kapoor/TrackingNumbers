@@ -25,6 +25,15 @@ public class Range {
 		return false;
 	}
 	
+	public boolean isSplitRequired(Range range)
+	{
+		if(isTwoWaySplit(range) || isThreeWaySplit(range))
+		{
+			return true;
+		}
+		return false;
+	}
+	
 	private boolean isSubrange(Range range) {
 		if(range.end <= this.end && range.start >= this.start)
 		{
@@ -63,6 +72,19 @@ public class Range {
 	{
 		Range range = new Range(Math.min(this.start,range2.start), Math.max(this.end, range2.end));
 		return range;
+	}
+	
+	public ArrayList<Range> split(Range range)
+	{
+		if(isTwoWaySplit(range))
+		{
+			return twoWaySplit(range);
+		}
+		if(isThreeWaySplit(range))
+		{
+			return threeWaySplit(range);
+		}
+		return null;
 	}
 	
 	public ArrayList<Range> twoWaySplit(Range range)
