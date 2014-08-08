@@ -39,7 +39,7 @@ public class Tracking {
 	
 	public boolean isStatusCodeAndTrackingNumSame(Tracking trackingObj1, Tracking trackingObj2)
 	{
-		if(trackingObj1.statusCode.equals(trackingObj1.statusCode) && trackingObj2.trackingNumber  == trackingObj2.trackingNumber)
+		if(trackingObj1.statusCode.equals(trackingObj2.statusCode) && trackingObj1.trackingNumber  == trackingObj2.trackingNumber)
 			return true;
 		return false;
 	}
@@ -50,21 +50,30 @@ public class Tracking {
 		Tracking trackObj;
 		minimalTrackingList.add(trackingInputList.get(0));
 		for(int i = 1; i < trackingInputList.size(); i++){
+			System.out.println(i);
 			for(int j = 0; j < minimalTrackingList.size(); j++)
 			{
+				System.out.println(minimalTrackingList);
+				//System.out.println(trackingInputList);
+				System.out.println(i + ":" + j);
 				if(trackingInputList.get(i).range.isLesserRangeThan(minimalTrackingList.get(j).range))
 				{
+					System.out.println("enters2");
 					minimalTrackingList.add(j, trackingInputList.get(i));
+					break;
 				}
 				else if(isStatusCodeAndTrackingNumSame(trackingInputList.get(i), minimalTrackingList.get(j)))
 				{
+					System.out.println("enters1");
 					if(minimalTrackingList.get(j).range.isMergeRequired(trackingInputList.get(i).range))
 					{
+						System.out.println("enters");
 						trackObj = new Tracking();
 						trackObj.range = trackingInputList.get(i-1).range.merge(trackingInputList.get(i).range);
 						trackObj.statusCode = trackingInputList.get(i).statusCode;
 						trackObj.trackingNumber =  trackingInputList.get(i).trackingNumber;
 						minimalTrackingList.add(j, trackObj);
+						break;
 					}
 				}
 				else
@@ -74,6 +83,7 @@ public class Tracking {
 						ArrayList<Range> splitRanges = minimalTrackingList.get(j).range.split(trackingInputList.get(i).range);
 						ArrayList<Tracking> trackingAssignedList = assignStatusAndTrackNumberToRange(splitRanges, trackingInputList.get(i).range, minimalTrackingList.get(j).range);
 						minimalTrackingList.addAll(j, trackingAssignedList);
+						break;
 					}
 				}
 			}
@@ -82,14 +92,16 @@ public class Tracking {
 		
 	}
 	
-	private ArrayList<Tracking> assignStatusAndTrackNumberToRange(
-			ArrayList<Range> splitRanges, Range range2, Range range3) {
+	private ArrayList<Tracking> assignStatusAndTrackNumberToRange(ArrayList<Range> splitRanges, Range range2, Range range3) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	public static void main(String [] args) throws IOException {
 		List<Tracking> trackingInputList = readInput("trackingInput");
-		System.out.println(trackingInputList);
+		//System.out.println(trackingInputList);
+		Tracking tracking = new Tracking();
+		List<Tracking> minimalTrackingList = tracking.generateMinimalTrackingList(trackingInputList);
+		System.out.println("Ans:"+minimalTrackingList);
 	}
 	
 }

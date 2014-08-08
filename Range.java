@@ -19,7 +19,7 @@ public class Range {
 	
 	public boolean isLesserRangeThan(Range range)
 	{
-		if(this.end < range.end)
+		if(this.end < range.start)
 		{
 			return true;
 		}
