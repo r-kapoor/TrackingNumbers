@@ -92,10 +92,24 @@ public class Tracking {
 		
 	}
 	
-	private ArrayList<Tracking> assignStatusAndTrackNumberToRange(ArrayList<Range> splitRanges, Range range2, Range range3) {
-		// TODO Auto-generated method stub
-		return null;
+	private static ArrayList<Tracking> assignStatusAndTrackNumberToRange(ArrayList<Range> splitRanges, Tracking trackingObj1, Tracking trackingObj2) {
+		ArrayList<Tracking> trackingAssignedList = new ArrayList<Tracking>();
+		Tracking tracking = new Tracking();
+		
+		for(int i = 0; i < splitRanges.size(); i++){
+			if(trackingObj1.range.isSubrange(splitRanges.get(i)))
+			{
+				tracking = new Tracking(trackingObj1.statusCode, trackingObj1.trackingNumber, splitRanges.get(i));
+			}
+			if(trackingObj2.range.isSubrange(splitRanges.get(i)))
+			{
+				tracking = new Tracking(trackingObj2.statusCode, trackingObj2.trackingNumber, splitRanges.get(i));
+			}
+			trackingAssignedList.add(tracking);
+		}
+ 		return trackingAssignedList;
 	}
+	
 	public static void main(String [] args) throws IOException {
 		List<Tracking> trackingInputList = readInput("trackingInput");
 		//System.out.println(trackingInputList);
