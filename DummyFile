@@ -1,0 +1,120 @@
+import java.io.*;
+import java.util.*;
+
+
+public class Tracking {
+
+	private String statusCode;
+	private int trackingNumber;
+	private Range range;
+	
+	public Tracking()
+	{
+		
+	}
+	public Tracking(String statusCode, int trackingNumber, Range range){
+		this.statusCode = statusCode;
+		this.trackingNumber = trackingNumber;
+		this.range = range;
+	}
+	@Override
+	public String toString()
+	{
+		return range+","+statusCode+","+trackingNumber;
+	}
+	public static List<Tracking> readInput(String filename) throws IOException {
+		List<Tracking> trackingList = new ArrayList<Tracking>();
+		Scanner sc = new Scanner(new FileReader(filename));
+		String currentLine;
+		while(sc.hasNext()){
+			currentLine = sc.nextLine();
+			String[] splitLine = currentLine.split(" ");
+			Range range = new Range(Integer.parseInt(splitLine[0]), Integer.parseInt(splitLine[1]));
+			Tracking tracking = new Tracking(splitLine[2], Integer.parseInt(splitLine[3]), range);
+			trackingList.add(tracking);	
+		}
+		return trackingList;
+	}
+	
+	public static boolean isStatusCodeAndTrackingNumSame(Tracking aTrackingObj, Tracking bTrackingObj)
+	{
+		if(aTrackingObj.statusCode.equals(bTrackingObj.statusCode) && aTrackingObj.trackingNumber  == bTrackingObj.trackingNumber)
+			return true;
+		return false;
+	}
+	public static List<Tracking> generateMinimalTrackingList(List<Tracking> trackingInputList) {
+		Range range;
+		List <Tracking> minimalTrackingList = new ArrayList<Tracking>();
+		List<Range> rangeList = new ArrayList<Range>();
+		Tracking trackObj;
+		minimalTrackingList.add(trackingInputList.get(0));
+		for(int i = 1; i < trackingInputList.size(); i++){
+			for(int j = 0; j < minimalTrackingList.size(); j++)
+			{
+			if(isStatusCodeAndTrackingNumSame( minimalTrackingList.get(j), trackingInputList.get(i)))
+			{
+				System.out.print("same status code");
+				if(trackingInputList.get(i).range.isMergeRequired(minimalTrackingList.get(j).range))
+				{
+					trackObj = new Tracking();
+					trackObj.range = trackingInputList.get(i).range.merge(trackingInputList.get(i-1).range);
+					trackObj.statusCode = trackingInputList.get(i).statusCode;
+					trackObj.trackingNumber =  trackingInputList.get(i).trackingNumber;
+					minimalTrackingList.add(j, trackObj);
+				}
+				else
+				{
+					//minimalTrackingList = placeAtAppropriatePostion(minimalTrackingList, trackingInputList.get(i));
+					
+				}
+			}
+			else
+			{
+				System.out.print("in splitReuoired");
+				if(minimalTrackingList.get(j).range.isSplitRequired(trackingInputList.get(i).range))
+				{
+					System.out.print("in split");
+					ArrayList<Range> splitRanges = minimalTrackingList.get(j).range.split(trackingInputList.get(i).range);
+					ArrayList<Tracking> trackingAssignedList = assignStatusAndTrackNumberToRange(splitRanges, minimalTrackingList.get(j), trackingInputList.get(i));
+					System.out.println(trackingAssignedList);
+					minimalTrackingList.addAll(j, trackingAssignedList);
+				}
+				else
+				{
+					//minimalTrackingList = placeNonSplittedListinMinimal(minimalTrackingList, trackingInputList.get(i));
+				}
+			}
+				
+			}
+		}
+		return minimalTrackingList;
+		
+	}
+	
+	private static ArrayList<Tracking> assignStatusAndTrackNumberToRange(ArrayList<Range> splitRanges, Tracking trackingObj1, Tracking trackingObj2) {
+		ArrayList<Tracking> trackingAssignedList = new ArrayList<Tracking>();
+		Tracking tracking = new Tracking();
+		
+		for(int i = 0; i < splitRanges.size(); i++){
+			if(trackingObj1.range.isSubrange(splitRanges.get(i)))
+			{
+				tracking = new Tracking(trackingObj1.statusCode, trackingObj1.trackingNumber, splitRanges.get(i));
+			}
+			if(trackingObj2.range.isSubrange(splitRanges.get(i)))
+			{
+				tracking = new Tracking(trackingObj2.statusCode, trackingObj2.trackingNumber, splitRanges.get(i));
+			}
+			trackingAssignedList.add(tracking);
+		}
+ 		return trackingAssignedList;
+	}
+	public static void main(String [] args) throws IOException {
+		List<Tracking> trackingInputList = readInput("C:\\Users\\suderoy\\workspace\\TrackingOrder\\src\\trackingInput");
+		List<Tracking> minimalTrackingList = new ArrayList<Tracking>();
+		minimalTrackingList = generateMinimalTrackingList(trackingInputList);
+		System.out.println("Hello" + trackingInputList +"\n" + minimalTrackingList);
+		
+		
+	}
+	
+}
